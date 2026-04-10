@@ -1,13 +1,14 @@
 // Widget raíz de la aplicación NextGen Fantasy.
 //
-// Estado actual: scaffold mínimo funcional.
+// Estado actual: MaterialApp.router conectado a go_router.
 //
 // Pendiente en fases futuras:
-// - Fase 0.D: integración con go_router para navegación declarativa
 // - Fase 0.E: envuelto en ProviderScope para gestión de estado con Riverpod
-// - Fase 3.1: AppTheme completo con paleta definitiva (Dev 3)
+// - Fase 3.1: AppTheme completo con paleta y tipografía definitivas (Dev 3)
+// - Fase 3.2: rutas reales añadidas al router (Dev 3)
 
 import 'package:flutter/material.dart';
+import 'package:nextgen_fantasy/app/router/app_router.dart';
 import 'package:nextgen_fantasy/core/theme/app_theme.dart';
 
 class NextGenFantasyApp extends StatelessWidget {
@@ -15,25 +16,13 @@ class NextGenFantasyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'NextGen Fantasy',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark,
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'NextGen Fantasy',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-            ),
-          ),
-        ),
-      ),
+      routerConfig: appRouter,
     );
   }
 }
