@@ -42,6 +42,9 @@ dependencies:
   dio: ^5.7.0
   shared_preferences: ^2.3.3
   hive_flutter: ^1.1.0
+  cached_network_image: ^3.4.1
+  skeletonizer: ^1.4.2
+  flutter_animate: ^4.5.2
 
 dev_dependencies:
   flutter_test:
