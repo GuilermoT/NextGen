@@ -1,40 +1,105 @@
-// Sistema de navegación declarativo de NextGen Fantasy.
-//
-// Usa go_router para gestionar rutas con soporte nativo de Deep Links.
-// Los Deep Links son necesarios para las invitaciones a ligas privadas:
-// cuando un manager comparte un enlace, la app debe abrirse directamente
-// en la pantalla de unirse a esa liga específica.
-//
-// Estado actual: una sola ruta provisional (/).
-//
-// Pendiente en fases futuras:
-// - Dev 3 (Fase 3.2): añadir rutas reales /splash /login /home /lineup /market /finance
-// - Dev 2 (Fase 2.9): conectar el redirect guard al estado de autenticación de Supabase
-//   para redirigir a /login si el usuario no tiene sesión activa
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nextgen_fantasy/features/auth/presentation/screens/login_screen.dart';
+import 'package:nextgen_fantasy/features/auth/presentation/screens/splash_screen.dart';
+import 'package:nextgen_fantasy/features/finance/presentation/screens/finance_screen.dart';
+import 'package:nextgen_fantasy/features/home/presentation/screens/home_screen.dart';
+import 'package:nextgen_fantasy/features/lineup/presentation/screens/lineup_screen.dart';
+import 'package:nextgen_fantasy/features/market/presentation/screens/market_screen.dart';
+
+// TODO Dev 2 (Fase 2.9): añadir redirect guard aquí
+//   redirect: (context, state) { ... consultar authNotifierProvider ... }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/splash',
   debugLogDiagnostics: true,
   routes: [
     GoRoute(
-      path: '/',
-      builder: (BuildContext context, GoRouterState state) {
-        return const Scaffold(
-          backgroundColor: Color(0xFF0A0A0F),
-          body: Center(
-            child: Text(
-              'NextGen Fantasy',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
+      path: '/splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginScreen(),
+    ),
+    ShellRoute(
+      builder: (context, state, child) {
+        int selectedIndex = 0;
+        final path = state.uri.path;
+        if (path.startsWith('/home/lineup')) {
+          selectedIndex = 1;
+        } else if (path.startsWith('/home/market')) {
+          selectedIndex = 2;
+        } else if (path.startsWith('/home/finance')) {
+          selectedIndex = 3;
+        }
+
+        return Scaffold(
+          body: child,
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: selectedIndex,
+            onDestinationSelected: (index) {
+              switch (index) {
+                case 0:
+                  context.go('/home');
+                case 1:
+                  context.go('/home/lineup');
+                case 2:
+                  context.go('/home/market');
+                case 3:
+                  context.go('/home/finance');
+              }
+            },
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: 'Inicio',
               ),
-            ),
+              NavigationDestination(
+                icon: Icon(Icons.sports_soccer_outlined),
+                selectedIcon: Icon(Icons.sports_soccer),
+                label: 'Alineación',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.storefront_outlined),
+                selectedIcon: Icon(Icons.storefront),
+                label: 'Mercado',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.account_balance_wallet_outlined),
+                selectedIcon: Icon(Icons.account_balance_wallet),
+                label: 'Finanzas',
+              ),
+            ],
           ),
+        );
+      },
+      routes: [
+        GoRoute(
+          path: '/home',
+          builder: (context, state) => const HomeScreen(),
+        ),
+        GoRoute(
+          path: '/home/lineup',
+          builder: (context, state) => const LineupScreen(),
+        ),
+        GoRoute(
+          path: '/home/market',
+          builder: (context, state) => const MarketScreen(),
+        ),
+        GoRoute(
+          path: '/home/finance',
+          builder: (context, state) => const FinanceScreen(),
+        ),
+      ],
+    ),
+    GoRoute(
+      path: '/league/join/:inviteCode',
+      builder: (context, state) {
+        final code = state.pathParameters['inviteCode']!;
+        return Scaffold(
+          body: Center(child: Text('Unirse a liga: $code')),
         );
       },
     ),

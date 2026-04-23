@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($bash = \"C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe\"; if \\(Test-Path $bash\\) { & $bash -c \"which flutter; flutter --version 2>&1; echo PATH=$env:PATH\" 2>&1 })",
+      "PowerShell($bash = \"C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe\"; & $bash -l -c \"which flutter 2>&1; echo done\" 2>&1)",
+      "PowerShell(Get-Volume)",
+      "PowerShell($candidates = @\\(\"C:\\\\flutter\\\\bin\\\\flutter.bat\", \"C:\\\\dev\\\\flutter\\\\bin\\\\flutter.bat\", \"C:\\\\Users\\\\34619\\\\flutter\\\\bin\\\\flutter.bat\", \"C:\\\\tools\\\\flutter\\\\bin\\\\flutter.bat\", \"C:\\\\Android\\\\flutter\\\\bin\\\\flutter.bat\", \"C:\\\\Users\\\\34619\\\\AppData\\\\Local\\\\flutter\\\\bin\\\\flutter.bat\", \"C:\\\\fvm\\\\versions\\\\stable\\\\bin\\\\flutter.bat\", \"C:\\\\Users\\\\34619\\\\fvm\\\\versions\\\\stable\\\\bin\\\\flutter.bat\"\\); $candidates | ForEach-Object { if \\(Test-Path $_\\) { Write-Output \"FOUND: $_\" } else { Write-Output \"NOT: $_\" } })",
+      "PowerShell(winget search \"Flutter\" --source winget 2>&1)",
+      "PowerShell(Select-String -Pattern \"flutter\" -SimpleMatch -CaseSensitive:$false)",
+      "PowerShell(winget search \"Google.Flutter\" --source winget 2>&1)",
+      "PowerShell(winget search \"flutter sdk\" --source winget 2>&1)",
+      "PowerShell($json = Invoke-RestMethod \"https://storage.googleapis.com/flutter_infra_release/releases/releases_windows.json\"; $currentHash = $json.current_release.stable; $release = $json.releases | Where-Object { $_.hash -eq $currentHash } | Select-Object -First 1; Write-Output \"Version: $\\($release.version\\)\"; Write-Output \"URL: https://storage.googleapis.com/flutter_infra_release/releases/$\\($release.archive\\)\")",
+      "PowerShell($url = \"https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_3.41.7-stable.zip\"; $dest = \"$env:TEMP\\\\flutter_stable.zip\"; $installDir = \"C:\\\\flutter\"; Write-Output \"Descargando Flutter 3.41.7...\"; Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing; Write-Output \"Descarga completada. Extrayendo...\"; if \\(Test-Path $installDir\\) { Remove-Item $installDir -Recurse -Force }; Expand-Archive -Path $dest -DestinationPath \"C:\\\\\" -Force; Write-Output \"Extracción completada.\"; Remove-Item $dest -Force; Write-Output \"Listo en C:\\\\flutter\")",
+      "PowerShell(& \"C:\\\\flutter\\\\bin\\\\flutter.bat\" --version 2>&1)"
+    ]
+  }
+}
