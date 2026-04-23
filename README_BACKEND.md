@@ -56,3 +56,7 @@ http://127.0.0.1:54321/functions/v1/seed-players
 ```
 
 **Nota: Es fundamental seguir este orden (1º Equipos, 2º Jugadores). Si realizas un supabase db reset, deberás ejecutar ambos enlaces de nuevo para recuperar los datos.**
+3. Abre esta URL en tu navegador para ejecutar el script:
+```bash
+http://127.0.0.1:54321/functions/v1/seed-clubs
+```
