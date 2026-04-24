@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nextgen_fantasy/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:nextgen_fantasy/features/auth/presentation/screens/login_screen.dart';
 import 'package:nextgen_fantasy/features/auth/presentation/screens/splash_screen.dart';
 import 'package:nextgen_fantasy/features/finance/presentation/screens/finance_screen.dart';
@@ -9,12 +11,37 @@ import 'package:nextgen_fantasy/features/home/presentation/screens/home_screen.d
 import 'package:nextgen_fantasy/features/lineup/presentation/screens/lineup_screen.dart';
 import 'package:nextgen_fantasy/features/market/presentation/screens/market_screen.dart';
 
-// TODO Dev 2 (Fase 2.9): añadir redirect guard aquí
-//   redirect: (context, state) { ... consultar authNotifierProvider ... }
+class _AuthRefreshNotifier extends ChangeNotifier {
+  void refresh() => notifyListeners();
+}
+
+final _authRefresh = _AuthRefreshNotifier();
+
+/// Invocado desde app.dart vía ref.listen para que GoRouter
+/// re-evalúe los redirects cuando cambia el estado de auth.
+void refreshAppRouter() => _authRefresh.refresh();
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/splash',
   debugLogDiagnostics: true,
+  refreshListenable: _authRefresh,
+  redirect: (context, state) {
+    final container = ProviderScope.containerOf(context);
+    final authAsync = container.read(authNotifierProvider);
+
+    final isAuthPage = state.matchedLocation == '/login' ||
+        state.matchedLocation == '/splash';
+
+    return authAsync.when(
+      loading: () => isAuthPage ? null : '/splash',
+      error: (_, __) => '/login',
+      data: (user) {
+        if (user == null && !isAuthPage) return '/login';
+        if (user != null && isAuthPage) return '/home';
+        return null;
+      },
+    );
+  },
   routes: [
     GoRoute(
       path: '/splash',

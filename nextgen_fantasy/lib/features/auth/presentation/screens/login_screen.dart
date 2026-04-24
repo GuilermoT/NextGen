@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nextgen_fantasy/core/theme/app_colors.dart';
+import 'package:nextgen_fantasy/features/auth/presentation/providers/auth_notifier.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -63,9 +65,9 @@ class LoginScreen extends StatelessWidget {
                       .slideY(begin: -0.1),
                   const SizedBox(height: 64),
                   ElevatedButton(
-                    onPressed: () {
-                      // TODO Dev 2: llamar a ref.read(authNotifierProvider.notifier).signInWithGoogle()
-                    },
+                    onPressed: () => ref
+                        .read(authNotifierProvider.notifier)
+                        .signInWithGoogle(),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 52),
                     ),
