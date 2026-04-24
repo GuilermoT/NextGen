@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:nextgen_fantasy/features/auth/presentation/screens/login_screen.dart';
 import 'package:nextgen_fantasy/features/auth/presentation/screens/splash_screen.dart';
 import 'package:nextgen_fantasy/features/finance/presentation/screens/finance_screen.dart';
+import 'package:nextgen_fantasy/features/gamification/presentation/screens/gamification_hub_screen.dart';
+import 'package:nextgen_fantasy/features/gamification/presentation/screens/sobre_tactica_screen.dart';
 import 'package:nextgen_fantasy/features/home/presentation/screens/home_screen.dart';
 import 'package:nextgen_fantasy/features/lineup/presentation/screens/lineup_screen.dart';
 import 'package:nextgen_fantasy/features/market/presentation/screens/market_screen.dart';
@@ -32,6 +34,8 @@ final GoRouter appRouter = GoRouter(
           selectedIndex = 2;
         } else if (path.startsWith('/home/finance')) {
           selectedIndex = 3;
+        } else if (path.startsWith('/home/gamification')) {
+          selectedIndex = 4;
         }
 
         return Scaffold(
@@ -48,6 +52,8 @@ final GoRouter appRouter = GoRouter(
                   context.go('/home/market');
                 case 3:
                   context.go('/home/finance');
+                case 4:
+                  context.go('/home/gamification');
               }
             },
             destinations: const [
@@ -71,6 +77,11 @@ final GoRouter appRouter = GoRouter(
                 selectedIcon: Icon(Icons.account_balance_wallet),
                 label: 'Finanzas',
               ),
+              NavigationDestination(
+                icon: Icon(Icons.emoji_events_outlined),
+                selectedIcon: Icon(Icons.emoji_events),
+                label: 'Jugar',
+              ),
             ],
           ),
         );
@@ -91,6 +102,14 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: '/home/finance',
           builder: (context, state) => const FinanceScreen(),
+        ),
+        GoRoute(
+          path: '/home/gamification',
+          builder: (context, state) => const GamificationHubScreen(),
+        ),
+        GoRoute(
+          path: '/home/gamification/sobre',
+          builder: (context, state) => const SobreTacticaScreen(),
         ),
       ],
     ),
