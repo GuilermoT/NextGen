@@ -56,3 +56,16 @@ http://127.0.0.1:54321/functions/v1/seed-players
 ```
 
 **Nota: Es fundamental seguir este orden (1º Equipos, 2º Jugadores). Si realizas un supabase db reset, deberás ejecutar ambos enlaces de nuevo para recuperar los datos.**
+3. Abre esta URL en tu navegador para ejecutar el script:
+```bash
+http://127.0.0.1:54321/functions/v1/seed-clubs
+```
+```bash
+http://127.0.0.1:54321/functions/v1/seed-clubs
+```
+4. Poblar Jugadores (Paso Obligatorio 2): Una vez insertados los equipos, abre esta URL para insertar los jugadores con lógica de mercado y barajado:
+```bash
+http://127.0.0.1:54321/functions/v1/seed-players
+```
+
+**Nota: Es fundamental seguir este orden (1º Equipos, 2º Jugadores). Si realizas un supabase db reset, deberás ejecutar ambos enlaces de nuevo para recuperar los datos.**
