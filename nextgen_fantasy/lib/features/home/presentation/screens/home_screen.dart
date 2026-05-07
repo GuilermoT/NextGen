@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nextgen_fantasy/core/theme/app_colors.dart';
+import 'package:nextgen_fantasy/features/market/presentation/providers/team_provider.dart';
 import 'package:nextgen_fantasy/shared/widgets/player_card.dart';
 import 'package:nextgen_fantasy/shared/widgets/points_badge.dart';
 import 'package:nextgen_fantasy/shared/widgets/ranking_row.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   int _daysUntilNextMatchday() {
@@ -15,9 +17,15 @@ class HomeScreen extends StatelessWidget {
     return diff.inDays.clamp(0, 999);
   }
 
+  String _formatBudget(int budget) {
+    final millions = budget / 1000000;
+    return '${millions.toStringAsFixed(1)}M€';
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context).textTheme;
+    final team = ref.watch(currentTeamProvider).valueOrNull;
 
     const mockPlayers = [
       {'name': 'Ter Stegen', 'pos': 'POR', 'pts': 8.0, 'captain': false},
@@ -37,7 +45,6 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
-      // TODO Dev 2: conectar a currentTeamProvider cuando TeamRepository esté listo
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -60,6 +67,26 @@ class HomeScreen extends StatelessWidget {
                       Text('Jornada 32', style: theme.bodyMedium)
                           .animate()
                           .fadeIn(duration: 400.ms, delay: 80.ms),
+                      if (team != null) ...[
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            Text(
+                              team.name,
+                              style: theme.bodySmall?.copyWith(
+                                color: AppColors.primaryGreen,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              '  ·  ${_formatBudget(team.budget)}',
+                              style: theme.bodySmall?.copyWith(
+                                color: AppColors.accentGold,
+                              ),
+                            ),
+                          ],
+                        ).animate().fadeIn(duration: 400.ms, delay: 120.ms),
+                      ],
                     ],
                   ),
                   PointsBadge(points: 62.5, label: 'J32')
