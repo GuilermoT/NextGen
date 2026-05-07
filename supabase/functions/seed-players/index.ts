@@ -30,25 +30,38 @@ Deno.serve(async (req) => {
     if (clubsError) throw clubsError
     const clubMap = Object.fromEntries(clubs?.map(c => [c.api_football_team_id, c.id]) || [])
 
-    // 3. Ingesta por Chunks (Páginas de la API)
-    // La cuenta gratuita nos limita, así que pedimos las 3 primeras páginas (~60 jugadores)
-    let allPlayers: any[] = []
-    const pagesToFetch = 3 
+    // 3. Ingesta: Decidir entre MOCK (Local) o API REAL
+    let allPlayers: any[] = [];
+    const useMockApi = Deno.env.get('USE_MOCK_API') === 'true';
 
-    for (let page = 1; page <= pagesToFetch; page++) {
-      const response = await fetch(`https://v3.football.api-sports.io/players?league=140&season=2024&page=${page}`, {
-        headers: { 
-          'x-apisports-key': apiFootballKey, 
-          'x-rapidapi-host': 'v3.football.api-sports.io' 
+    if (useMockApi) {
+      // MODO MOCK: No gasta créditos. Importamos los datos locales.
+      const { mockPlayersResponse } = await import('./mock-data.ts');
+      // Duplicamos el array unas cuantas veces para simular volumen
+      allPlayers = mockPlayersResponse.response; 
+      console.log("🟢 Ejecutando en MODO MOCK. Créditos de API a salvo.");
+    } else {
+      // MODO PRODUCCIÓN: Llama a la API real
+      const apiFootballKey = Deno.env.get('API_FOOTBALL_KEY');
+      if (!apiFootballKey) throw new Error("API_FOOTBALL_KEY no configurada");
+
+      console.log("🔴 Ejecutando en MODO PRODUCCIÓN. Consumiendo créditos de API...");
+      const pagesToFetch = 3; 
+      for (let page = 1; page <= pagesToFetch; page++) {
+        const response = await fetch(`https://v3.football.api-sports.io/players?league=140&season=2024&page=${page}`, {
+          headers: { 
+            'x-apisports-key': apiFootballKey, 
+            'x-rapidapi-host': 'v3.football.api-sports.io' 
+          }
+        });
+        const resData = await response.json();
+        if (resData.response) {
+          allPlayers = [...allPlayers, ...resData.response];
         }
-      })
-      const resData = await response.json()
-      if (resData.response) {
-        allPlayers = [...allPlayers, ...resData.response]
       }
     }
 
-    // 4. Mapeo con Algoritmo de Valor de Mercado
+    // 4. Mapeo con Algoritmo de Valor de Mercado (El resto del código se queda exactamente igual)
     const mappedPlayers = allPlayers.map(item => {
       const stats = item.statistics[0];
       const teamId = stats.team.id;
