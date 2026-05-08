@@ -79,7 +79,14 @@ class PlayerCard extends StatelessWidget {
                     fontSize: 14,
                     color: AppColors.accentGold,
                   ),
-                ),
+                )
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .scaleXY(
+                      begin: 0.85,
+                      end: 1.15,
+                      duration: 900.ms,
+                      curve: Curves.easeInOut,
+                    ),
             ],
           ),
           const SizedBox(height: 8),
