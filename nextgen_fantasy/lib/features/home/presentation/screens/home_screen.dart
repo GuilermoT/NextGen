@@ -3,6 +3,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nextgen_fantasy/core/theme/app_colors.dart';
+import 'package:nextgen_fantasy/features/lineup/domain/models/player_model.dart';
+import 'package:nextgen_fantasy/features/lineup/presentation/providers/squad_provider.dart';
 import 'package:nextgen_fantasy/features/market/presentation/providers/team_provider.dart';
 import 'package:nextgen_fantasy/shared/widgets/player_card.dart';
 import 'package:nextgen_fantasy/shared/widgets/points_badge.dart';
@@ -22,18 +24,24 @@ class HomeScreen extends ConsumerWidget {
     return '${millions.toStringAsFixed(1)}M€';
   }
 
+  String _positionLabel(Position pos) {
+    switch (pos) {
+      case Position.goalkeeper:
+        return 'POR';
+      case Position.defender:
+        return 'DEF';
+      case Position.midfielder:
+        return 'MED';
+      case Position.forward:
+        return 'DEL';
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context).textTheme;
     final team = ref.watch(currentTeamProvider).valueOrNull;
-
-    const mockPlayers = [
-      {'name': 'Ter Stegen', 'pos': 'POR', 'pts': 8.0, 'captain': false},
-      {'name': 'Carvajal', 'pos': 'DEF', 'pts': 11.5, 'captain': false},
-      {'name': 'Pedri', 'pos': 'MED', 'pts': 14.0, 'captain': true},
-      {'name': 'Bellingham', 'pos': 'MED', 'pts': 12.0, 'captain': false},
-      {'name': 'Lewandowski', 'pos': 'DEL', 'pts': 17.0, 'captain': false},
-    ];
+    final squad = ref.watch(currentSquadProvider).valueOrNull ?? [];
 
     const mockRanking = [
       {'pos': 1, 'team': 'Los Galácticos FC', 'pts': 842.5, 'trend': 1},
@@ -141,23 +149,27 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               SizedBox(
                 height: 175,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: mockPlayers.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 12),
-                  itemBuilder: (context, index) {
-                    final p = mockPlayers[index];
-                    return PlayerCard(
-                      playerName: p['name'] as String,
-                      position: p['pos'] as String,
-                      points: p['pts'] as double,
-                      isCaptain: p['captain'] as bool,
-                    )
-                        .animate()
-                        .fadeIn(duration: 350.ms, delay: (320 + index * 80).ms)
-                        .slideX(begin: 0.1);
-                  },
-                ),
+                child: squad.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: squad.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 12),
+                        itemBuilder: (context, index) {
+                          final sp = squad[index];
+                          return PlayerCard(
+                            playerName: sp.player.name,
+                            position: _positionLabel(sp.player.position),
+                            points: 0.0,
+                            isCaptain: false,
+                          )
+                              .animate()
+                              .fadeIn(
+                                  duration: 350.ms,
+                                  delay: (320 + index * 80).ms)
+                              .slideX(begin: 0.1);
+                        },
+                      ),
               ),
 
               const SizedBox(height: 24),
