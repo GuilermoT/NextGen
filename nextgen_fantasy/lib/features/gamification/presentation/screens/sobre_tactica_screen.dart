@@ -18,10 +18,20 @@ class _SobreTacticaScreenState extends State<SobreTacticaScreen>
   late final Animation<double> _animation;
   bool _isFlipped = false;
   bool _showClose = false;
+  late final _TacticBonus _selectedBonus;
+
+  static const _bonuses = [
+    _TacticBonus(titulo: '⚡ Doble puntuación', descripcion: 'para delanteros esta jornada'),
+    _TacticBonus(titulo: '🛡️ Escudo defensivo', descripcion: 'defensas suman +3 por portería a cero'),
+    _TacticBonus(titulo: '🎯 Penalti de oro', descripcion: 'bonus x2 por cada penalti transformado'),
+    _TacticBonus(titulo: '🌟 Capitán legendario', descripcion: 'el capitán triplica sus puntos esta jornada'),
+    _TacticBonus(titulo: '🔥 Racha imparable', descripcion: 'jugadores con racha suman +5 extra'),
+  ];
 
   @override
   void initState() {
     super.initState();
+    _selectedBonus = _bonuses[math.Random().nextInt(_bonuses.length)];
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
@@ -111,6 +121,9 @@ class _SobreTacticaScreenState extends State<SobreTacticaScreen>
 
   Widget _buildCardBack(BuildContext context) {
     final theme = Theme.of(context).textTheme;
+    final parts = _selectedBonus.titulo.split(' ');
+    final bonusEmoji = parts.first;
+    final bonusLabel = parts.sublist(1).join(' ');
     // Counter-rotate so the back face reads correctly during the flip
     return Transform(
       alignment: Alignment.center,
@@ -136,14 +149,14 @@ class _SobreTacticaScreenState extends State<SobreTacticaScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('⚡', style: TextStyle(fontSize: 52)),
+            Text(bonusEmoji, style: const TextStyle(fontSize: 52)),
             const SizedBox(height: 16),
             Text('¡Bonus desbloqueado!', style: theme.titleMedium),
             const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 28),
               child: Text(
-                'Doble puntuación para delanteros esta jornada',
+                _selectedBonus.descripcion,
                 style: theme.bodyMedium?.copyWith(color: AppColors.textPrimary),
                 textAlign: TextAlign.center,
               ),
@@ -158,12 +171,12 @@ class _SobreTacticaScreenState extends State<SobreTacticaScreen>
                   color: AppColors.primaryGreen.withValues(alpha: 0.4),
                 ),
               ),
-              child: const Text(
-                'x2 DEL',
-                style: TextStyle(
+              child: Text(
+                bonusLabel,
+                style: const TextStyle(
                   color: AppColors.primaryGreen,
                   fontWeight: FontWeight.bold,
-                  fontSize: 22,
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -172,6 +185,12 @@ class _SobreTacticaScreenState extends State<SobreTacticaScreen>
       ),
     );
   }
+}
+
+class _TacticBonus {
+  final String titulo;
+  final String descripcion;
+  const _TacticBonus({required this.titulo, required this.descripcion});
 }
 
 class _CardFront extends StatelessWidget {
