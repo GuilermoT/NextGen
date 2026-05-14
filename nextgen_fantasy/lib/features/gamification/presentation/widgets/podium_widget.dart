@@ -7,6 +7,11 @@ class PodiumWidget extends StatelessWidget {
 
   const PodiumWidget({super.key, required this.topThree});
 
+  static String _initials(String name) {
+    final words = name.trim().split(' ').where((w) => w.isNotEmpty).take(2);
+    return words.map((w) => w[0].toUpperCase()).join();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
@@ -38,6 +43,19 @@ class PodiumWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Column(
               children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: color.withValues(alpha: 0.2),
+                  child: Text(
+                    _initials(entry['name'] as String),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: color,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
                 Text(medals[i], style: const TextStyle(fontSize: 22)),
                 const SizedBox(height: 4),
                 Text(
