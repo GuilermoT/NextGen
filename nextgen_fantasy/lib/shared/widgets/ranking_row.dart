@@ -46,7 +46,7 @@ class RankingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final row = Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: const BoxDecoration(
         border: Border(
@@ -90,5 +90,9 @@ class RankingRow extends StatelessWidget {
         ],
       ),
     );
+    if (position != 1) return row;
+    return row
+        .animate(onPlay: (c) => c.repeat())
+        .shimmer(duration: 2000.ms, color: AppColors.accentGold.withValues(alpha: 0.3));
   }
 }
