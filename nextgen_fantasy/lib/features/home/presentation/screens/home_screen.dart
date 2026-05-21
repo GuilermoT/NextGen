@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nextgen_fantasy/core/theme/app_colors.dart';
 import 'package:nextgen_fantasy/features/lineup/domain/models/player_model.dart';
+import 'package:nextgen_fantasy/features/lineup/presentation/providers/lineup_provider.dart';
 import 'package:nextgen_fantasy/features/lineup/presentation/providers/squad_provider.dart';
 import 'package:nextgen_fantasy/features/market/presentation/providers/team_provider.dart';
 import 'package:nextgen_fantasy/shared/widgets/player_card.dart';
@@ -42,6 +43,8 @@ class HomeScreen extends ConsumerWidget {
     final theme = Theme.of(context).textTheme;
     final team = ref.watch(currentTeamProvider).valueOrNull;
     final squad = ref.watch(currentSquadProvider).valueOrNull ?? [];
+    final lineup = ref.watch(currentLineupProvider).valueOrNull;
+    final captainId = lineup?.captain?.squadPlayer.id;
 
     const mockRanking = [
       {'pos': 1, 'team': 'Los Galácticos FC', 'pts': 842.5, 'trend': 1},
@@ -161,7 +164,7 @@ class HomeScreen extends ConsumerWidget {
                             playerName: sp.player.name,
                             position: _positionLabel(sp.player.position),
                             points: 0.0,
-                            isCaptain: false,
+                            isCaptain: captainId == sp.id,
                           )
                               .animate()
                               .fadeIn(
