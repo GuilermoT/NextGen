@@ -1,4 +1,7 @@
 -- Función: fluctuate_market_values
+-- Habilitar la extensión de cron en el entorno local
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
 -- Actualiza el market_value de todos los jugadores aplicando una variación
 -- aleatoria de +/- 10% cada 24 horas. Simula la dinámica real de un mercado.
 
