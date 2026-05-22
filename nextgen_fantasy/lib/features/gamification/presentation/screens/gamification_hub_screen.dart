@@ -101,7 +101,19 @@ class GamificationHubScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   PodiumWidget(topThree: topThree),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () =>
+                          context.push('/home/gamification/ranking'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.primaryGreen,
+                      ),
+                      child: const Text('Ver clasificación completa →'),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   LastPlaceBanner(
                     teamName: 'Vikingos del Sur',
                     points: 762.5,

@@ -6,6 +6,7 @@ import 'package:nextgen_fantasy/features/auth/presentation/screens/login_screen.
 import 'package:nextgen_fantasy/features/auth/presentation/screens/splash_screen.dart';
 import 'package:nextgen_fantasy/features/finance/presentation/screens/finance_screen.dart';
 import 'package:nextgen_fantasy/features/gamification/presentation/screens/gamification_hub_screen.dart';
+import 'package:nextgen_fantasy/features/gamification/presentation/screens/ranking_screen.dart';
 import 'package:nextgen_fantasy/features/gamification/presentation/screens/sobre_tactica_screen.dart';
 import 'package:nextgen_fantasy/features/home/presentation/screens/home_screen.dart';
 import 'package:nextgen_fantasy/features/lineup/presentation/screens/lineup_screen.dart';
@@ -137,6 +138,10 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: '/home/gamification/sobre',
           builder: (context, state) => const SobreTacticaScreen(),
+        ),
+        GoRoute(
+          path: '/home/gamification/ranking',
+          builder: (context, state) => const RankingScreen(),
         ),
       ],
     ),
