@@ -95,3 +95,90 @@ http://127.0.0.1:54321/functions/v1/seed-players
 
 
 **Nota: Es fundamental seguir este orden (1º Equipos, 2º Jugadores). Si realizas un supabase db reset, deberás ejecutar ambos enlaces de nuevo para recuperar los datos.**
+
+
+
+---
+
+## Contratos de RPCs del Motor de Mercado
+
+Referencia rápida para el equipo de Flutter. Todas las funciones se invocan
+mediante `supabase.rpc()` y requieren usuario autenticado.
+
+---
+
+### `buy_player`
+Ficha un jugador de forma atómica. Valida saldo, límite de plantilla y
+disponibilidad del jugador en una única transacción.
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `p_team_id` | UUID | ID del equipo del mánager |
+| `p_player_id` | UUID | ID del jugador a fichar |
+
+**Retorna:** `void`
+
+**Errores esperados:**
+- `No tienes permiso sobre este equipo` — el equipo no pertenece al usuario autenticado
+- `Jugador no encontrado` — el UUID no existe en `real_players`
+- `Presupuesto insuficiente. Disponible: X, Necesario: Y` — saldo menor que `market_value`
+- `Plantilla completa. Máximo 25 jugadores permitidos` — el equipo ya tiene 25 jugadores
+
+**Ejemplo Flutter:**
+```dart
+await supabase.rpc('buy_player', params: {
+  'p_team_id': teamId,
+  'p_player_id': playerId,
+});
+```
+
+---
+
+### `sell_player`
+Vende un jugador de forma atómica. Devuelve el valor de mercado actual
+al presupuesto del equipo.
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `p_team_id` | UUID | ID del equipo del mánager |
+| `p_player_id` | UUID | ID del jugador a vender |
+
+**Retorna:** `void`
+
+**Errores esperados:**
+- `No tienes permiso sobre este equipo` — el equipo no pertenece al usuario autenticado
+- `Este jugador no pertenece a tu equipo` — el jugador no está en la plantilla
+
+**Ejemplo Flutter:**
+```dart
+await supabase.rpc('sell_player', params: {
+  'p_team_id': teamId,
+  'p_player_id': playerId,
+});
+```
+
+---
+
+### `validate_lineup`
+Verifica que los 11 jugadores enviados pertenecen al equipo del mánager
+autenticado antes de guardar la alineación.
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `p_team_id` | UUID | ID del equipo del mánager |
+| `p_player_ids` | UUID[] | Array con exactamente 11 UUIDs de jugadores |
+
+**Retorna:** `boolean` — `true` si la alineación es válida
+
+**Errores esperados:**
+- `No tienes permiso sobre este equipo` — el equipo no pertenece al usuario autenticado
+- `La alineación debe contener exactamente 11 jugadores. Recibidos: X` — array incorrecto
+- `Alineación inválida. X jugadores no pertenecen a tu equipo` — jugadores ajenos
+
+**Ejemplo Flutter:**
+```dart
+final result = await supabase.rpc('validate_lineup', params: {
+  'p_team_id': teamId,
+  'p_player_ids': listOf11PlayerIds,
+});
+```
