@@ -18,6 +18,9 @@ DECLARE
   v_budget        BIGINT;
   v_market_value  BIGINT;
   v_player_count  INT;
+  v_position      TEXT;
+  v_position_count INT;
+  v_max_allowed   INT;
 BEGIN
   -- 1. Verificar que el mánager es dueño del equipo
   IF NOT EXISTS (
@@ -32,8 +35,8 @@ BEGIN
   FROM public.user_teams
   WHERE id = p_team_id;
 
-  -- 3. Leer valor de mercado del jugador
-  SELECT market_value INTO v_market_value
+  -- 3. Leer valor de mercado y posición del jugador
+  SELECT market_value, position INTO v_market_value, v_position
   FROM public.real_players
   WHERE id = p_player_id;
 
@@ -47,7 +50,7 @@ BEGIN
       v_budget, v_market_value;
   END IF;
 
-  -- 5. Verificar límite de plantilla (máx. 25 jugadores)
+  -- 5. Verificar límite total de plantilla (máx. 25)
   SELECT COUNT(*) INTO v_player_count
   FROM public.user_players
   WHERE team_id = p_team_id;
@@ -56,11 +59,31 @@ BEGIN
     RAISE EXCEPTION 'Plantilla completa. Máximo 25 jugadores permitidos';
   END IF;
 
-  -- 6. Insertar jugador en la plantilla
+  -- 6. Verificar límite por posición
+  v_max_allowed := CASE v_position
+    WHEN 'Goalkeeper' THEN 3
+    WHEN 'Defender'   THEN 8
+    WHEN 'Midfielder' THEN 8
+    WHEN 'Attacker'   THEN 6
+    ELSE 25
+  END;
+
+  SELECT COUNT(*) INTO v_position_count
+  FROM public.user_players up
+  JOIN public.real_players rp ON rp.id = up.player_id
+  WHERE up.team_id = p_team_id
+    AND rp.position = v_position;
+
+  IF v_position_count >= v_max_allowed THEN
+    RAISE EXCEPTION 'Límite de posición alcanzado. Máximo % jugadores en posición %',
+      v_max_allowed, v_position;
+  END IF;
+
+  -- 7. Insertar jugador en la plantilla
   INSERT INTO public.user_players (team_id, player_id, purchase_price)
   VALUES (p_team_id, p_player_id, v_market_value);
 
-  -- 7. Descontar presupuesto
+  -- 8. Descontar presupuesto
   UPDATE public.user_teams
   SET budget = budget - v_market_value
   WHERE id = p_team_id;

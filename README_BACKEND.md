@@ -123,6 +123,7 @@ disponibilidad del jugador en una única transacción.
 - `Jugador no encontrado` — el UUID no existe en `real_players`
 - `Presupuesto insuficiente. Disponible: X, Necesario: Y` — saldo menor que `market_value`
 - `Plantilla completa. Máximo 25 jugadores permitidos` — el equipo ya tiene 25 jugadores
+- `Límite de posición alcanzado. Máximo X jugadores en posición Y` — cupo de esa posición completo
 
 **Ejemplo Flutter:**
 ```dart
