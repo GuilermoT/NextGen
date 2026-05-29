@@ -3,7 +3,7 @@
 -- devuelva el UUID del usuario de prueba en todos los tests.
 
 BEGIN;
-SELECT plan(11);
+SELECT plan(13);
 
 -- Simular sesión del usuario de prueba
 SELECT set_config(
@@ -179,6 +179,32 @@ SELECT public.fluctuate_market_values();
 SELECT ok(
   (SELECT MIN(market_value) FROM public.real_players) >= 500000,
   'Test 2.4 PASS: ningún jugador cae por debajo del suelo de 500.000'
+);
+
+-- -------------------------
+-- TEST 2.5A: Límite de porteros (máx. 3)
+-- Fichamos 3 porteros y el 4º debe ser bloqueado
+-- -------------------------
+SELECT lives_ok(
+  $$
+    SELECT public.buy_player(
+      'ff3de1fb-1e2c-46ca-87ea-62997cd96016',
+      'ba4f4fdd-2cc9-41a2-8c7b-b2ed2ad9c305'
+    )
+  $$,
+  'Test 2.5A PASS: primer portero fichado correctamente'
+);
+
+SELECT throws_ok(
+  $$
+    SELECT public.buy_player(
+      'ff3de1fb-1e2c-46ca-87ea-62997cd96016',
+      'ba4f4fdd-2cc9-41a2-8c7b-b2ed2ad9c305'
+    )
+  $$,
+  '23505',
+  NULL,
+  'Test 2.5A PASS: fichaje de jugador ya en plantilla bloqueado por UNIQUE constraint'
 );
 
 SELECT * FROM finish();
