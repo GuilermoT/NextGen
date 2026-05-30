@@ -31,13 +31,37 @@ class RankingRow extends StatelessWidget {
 
   Widget _trendIcon() {
     if (trend > 0) {
-      return const Icon(Icons.arrow_upward, color: AppColors.primaryGreen, size: 16)
-          .animate()
-          .fadeIn(duration: 300.ms);
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.arrow_upward, color: AppColors.primaryGreen, size: 16),
+          const SizedBox(width: 4),
+          Text(
+            '+$trend',
+            style: const TextStyle(
+              color: AppColors.primaryGreen,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ).animate().fadeIn(duration: 300.ms);
     } else if (trend < 0) {
-      return const Icon(Icons.arrow_downward, color: AppColors.dangerRed, size: 16)
-          .animate()
-          .fadeIn(duration: 300.ms);
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.arrow_downward, color: AppColors.dangerRed, size: 16),
+          const SizedBox(width: 4),
+          Text(
+            '$trend',
+            style: const TextStyle(
+              color: AppColors.dangerRed,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ).animate().fadeIn(duration: 300.ms);
     }
     return const Icon(Icons.remove, color: AppColors.textSecondary, size: 16)
         .animate()
